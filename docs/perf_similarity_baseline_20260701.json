@@ -1,0 +1,121 @@
+{
+  "run_id": "20260701041144",
+  "base_url": "http://127.0.0.1:8010",
+  "started_at": "2026-07-01T04:11:44.294974+00:00",
+  "config": {
+    "requests": 30,
+    "concurrency": 5,
+    "synthetic_docs": 0,
+    "synthetic_repeat": 24,
+    "top_k": 10
+  },
+  "before_stats": {
+    "document_chunks": 320,
+    "log_chunks": 979422,
+    "documents": 27,
+    "logs": 310085,
+    "documents_today": 13,
+    "logs_today": 11137,
+    "document_index_bytes": 1274458,
+    "log_index_bytes": 6736528768,
+    "total_index_bytes": 6737803226,
+    "storage_paths": [
+      {
+        "path": "/",
+        "paths": [
+          "/"
+        ],
+        "label": "root",
+        "total_bytes": 1908706910208,
+        "used_bytes": 1349392809984,
+        "free_bytes": 559314100224,
+        "used_percent": 70.7
+      },
+      {
+        "path": "/logs, /minio_data",
+        "paths": [
+          "/logs",
+          "/minio_data"
+        ],
+        "label": "data volume",
+        "total_bytes": 7679363776512,
+        "used_bytes": 780378845184,
+        "free_bytes": 6898984931328,
+        "used_percent": 10.16
+      }
+    ],
+    "monitor_alerts": [],
+    "retention_policy": {
+      "mode": "policy_only",
+      "hot_days": 90,
+      "warm_days": 365,
+      "archive_days": 1095,
+      "description": "No automatic delete/archive is executed by default."
+    },
+    "recent_match_policy": {
+      "document_limit": 0,
+      "document_recent_days": 365,
+      "document_count": 27,
+      "sampling_enabled": false
+    }
+  },
+  "baseline": {
+    "catalog_list": {
+      "name": "GET /similarity/documents/search",
+      "requests": 15,
+      "concurrency": 4,
+      "errors": 0,
+      "error_samples": [],
+      "elapsed_sec": 0.024,
+      "rps": 617.409,
+      "latency_ms": {
+        "count": 15,
+        "min": 3.722,
+        "p50": 6.071,
+        "p95": 7.525,
+        "p99": 7.673,
+        "max": 7.71,
+        "avg": 5.815
+      }
+    },
+    "search_documents": {
+      "name": "POST /similarity/search/documents",
+      "requests": 30,
+      "concurrency": 5,
+      "errors": 0,
+      "error_samples": [],
+      "elapsed_sec": 0.395,
+      "rps": 76.037,
+      "latency_ms": {
+        "count": 30,
+        "min": 51.464,
+        "p50": 66.386,
+        "p95": 74.858,
+        "p99": 75.718,
+        "max": 76.054,
+        "avg": 64.807
+      }
+    },
+    "search_logs_text": {
+      "name": "POST /similarity/search/logs/text",
+      "requests": 15,
+      "concurrency": 3,
+      "errors": 0,
+      "error_samples": [],
+      "elapsed_sec": 0.208,
+      "rps": 72.103,
+      "latency_ms": {
+        "count": 15,
+        "min": 15.621,
+        "p50": 38.93,
+        "p95": 67.929,
+        "p99": 69.501,
+        "max": 69.893,
+        "avg": 39.919
+      }
+    }
+  },
+  "synthetic": {},
+  "created_document_ids": [],
+  "finished_at": "2026-07-01T04:11:45.120741+00:00"
+}

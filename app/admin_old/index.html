@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>xcn-similarity Admin</title>
+    <link rel="stylesheet" href="/admin/static/styles.css?v=20260601-upload" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">XS</span>
+          <div>
+            <strong>xcn-similarity</strong>
+            <small>Document leak similarity</small>
+          </div>
+        </div>
+        <nav>
+          <button class="nav-item active" data-view="dashboard">현황</button>
+          <button class="nav-item" data-view="documents">문서 관리</button>
+          <button class="nav-item" data-view="search">유사도 검색</button>
+          <button class="nav-item" data-view="logs">로그 확인</button>
+        </nav>
+        <div class="sidebar-foot">
+          <small id="healthText">상태 확인 전</small>
+        </div>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Vector Similarity Operations</p>
+            <h1 id="pageTitle">현황</h1>
+          </div>
+          <button id="refreshButton" class="ghost-button" type="button">새로고침</button>
+        </header>
+
+        <section id="dashboardView" class="view">
+          <div class="metric-grid">
+            <article class="metric"><span>문서</span><strong id="metricDocuments">-</strong></article>
+            <article class="metric"><span>문서 Chunk</span><strong id="metricDocumentChunks">-</strong></article>
+            <article class="metric"><span>로그</span><strong id="metricLogs">-</strong></article>
+            <article class="metric"><span>로그 Chunk</span><strong id="metricLogChunks">-</strong></article>
+          </div>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>서비스 상태</h2>
+                <p>벡터 DB, 임베딩 백엔드, API 버전을 확인합니다.</p>
+              </div>
+            </div>
+            <div class="kv-grid" id="healthDetail"></div>
+          </section>
+        </section>
+
+        <section id="documentsView" class="view split-view" hidden>
+          <section class="panel list-panel">
+            <div class="panel-head">
+              <div>
+                <h2>등록 문서</h2>
+                <p>현재 벡터 DB에 적재된 사내 문서를 확인합니다.</p>
+              </div>
+              <button id="newDocumentButton" class="primary-button" type="button">문서 등록</button>
+            </div>
+            <input id="documentFilter" class="wide-input" placeholder="문서명, ID, 부서 검색" />
+            <div id="documentList" class="item-list"></div>
+          </section>
+
+          <section class="panel detail-panel">
+            <div id="documentEmpty" class="empty-state">
+              <strong>문서를 선택하세요.</strong>
+              <span>문서 chunk와 기존 로그 유사도 검색 결과가 표시됩니다.</span>
+            </div>
+            <article id="documentDetail" hidden>
+              <div class="detail-title">
+                <div>
+                  <p class="eyebrow" id="documentStatus">-</p>
+                  <h2 id="documentTitle">-</h2>
+                  <p id="documentMeta" class="muted">-</p>
+                </div>
+                <button id="deleteDocumentButton" class="danger-button" type="button">삭제</button>
+              </div>
+              <div class="button-row">
+                <label class="compact-field">Top K <input id="docSearchTopK" type="number" min="1" max="200" value="20" /></label>
+                <label class="compact-field">Min Score <input id="docSearchMinScore" type="number" min="-1" max="1" step="0.01" value="0" /></label>
+                <label class="compact-field">대상
+                  <select id="docSearchSourceType">
+                    <option value="">전체</option>
+                    <option value="body">본문</option>
+                    <option value="attachment">첨부</option>
+                  </select>
+                </label>
+                <button id="searchLogsButton" class="primary-button" type="button">이 문서와 유사한 로그</button>
+              </div>
+              <h3>문서 Chunk</h3>
+              <div id="documentChunks" class="chunk-list"></div>
+            </article>
+          </section>
+        </section>
+
+        <section id="searchView" class="view split-view" hidden>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>로그 본문으로 문서 찾기</h2>
+                <p>기존 시스템에 로깅된 본문과 유사한 등록 문서를 검색합니다.</p>
+              </div>
+            </div>
+            <textarea id="queryText" rows="14" placeholder="로그 본문 또는 첨부 텍스트를 입력하세요."></textarea>
+            <label class="file-search-field">검색 파일
+              <input id="queryFile" type="file" accept=".doc,.docx,.pdf,.py,.txt,.hwp,.hwpx,.odt,.ppt,.pptx,.xls,.xlsx,.csv,.html,.htm,.rtf,.md" />
+            </label>
+            <div class="button-row">
+              <label class="compact-field">Top K <input id="queryTopK" type="number" min="1" max="100" value="10" /></label>
+              <label class="compact-field">Min Score <input id="queryMinScore" type="number" min="-1" max="1" step="0.01" value="0" /></label>
+              <button id="searchDocumentsButton" class="primary-button" type="button">문서 검색</button>
+              <button id="searchDocumentsByFileButton" class="ghost-button" type="button">파일로 문서 검색</button>
+            </div>
+            <div class="button-row search-filter-row">
+              <label class="compact-field">대상
+                <select id="queryLogSourceType">
+                  <option value="">전체</option>
+                  <option value="body">본문</option>
+                  <option value="attachment">첨부</option>
+                </select>
+              </label>
+              <label class="compact-field">svc <input id="queryLogSvc" placeholder="NENS" /></label>
+              <label class="compact-field">user_id <input id="queryLogUserId" placeholder="user" /></label>
+              <button id="searchLogsByTextButton" class="primary-button" type="button">로그 검색</button>
+              <button id="searchLogsByFileButton" class="ghost-button" type="button">파일로 로그 검색</button>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>검색 결과</h2>
+                <p>점수가 높은 chunk 기준으로 표시합니다.</p>
+              </div>
+            </div>
+            <div id="documentSearchResults" class="result-list"></div>
+          </section>
+        </section>
+
+        <section id="logsView" class="view split-view" hidden>
+          <section class="panel list-panel">
+            <div class="panel-head">
+              <div>
+                <h2>적재 로그</h2>
+                <p>본문/첨부 임베딩 결과를 샘플 단위로 확인합니다.</p>
+              </div>
+            </div>
+            <div class="filter-row">
+              <label>대상
+                <select id="logSourceTypeFilter">
+                  <option value="">전체</option>
+                  <option value="body">본문</option>
+                  <option value="attachment">첨부</option>
+                </select>
+              </label>
+              <label>svc
+                <input id="logSvcFilter" placeholder="예: MSM-, NENS" />
+              </label>
+              <label>user_id
+                <input id="logUserIdFilter" placeholder="사용자 ID" />
+              </label>
+              <button id="applyLogFiltersButton" class="primary-button" type="button">조회</button>
+              <button id="clearLogFiltersButton" class="ghost-button" type="button">초기화</button>
+            </div>
+            <div id="logList" class="item-list"></div>
+            <div class="pager">
+              <button id="prevLogsButton" class="ghost-button" type="button">이전</button>
+              <span id="logsPageText" class="muted">1 페이지</span>
+              <button id="nextLogsButton" class="ghost-button" type="button">다음</button>
+            </div>
+          </section>
+          <section class="panel detail-panel">
+            <div id="logEmpty" class="empty-state">
+              <strong>로그를 선택하세요.</strong>
+              <span>선택한 로그의 chunk 원문과 메타데이터가 표시됩니다.</span>
+            </div>
+            <article id="logDetail" hidden>
+              <div class="detail-title">
+                <div>
+                  <p class="eyebrow">indexed log</p>
+                  <h2 id="logTitle">-</h2>
+                  <p id="logMeta" class="muted">-</p>
+                </div>
+              </div>
+              <div id="logChunks" class="chunk-list"></div>
+            </article>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="documentDialog">
+      <form id="documentForm" method="dialog">
+        <h2>문서 등록</h2>
+        <label>문서명 <input name="title" maxlength="512" placeholder="미입력 시 파일명 사용" /></label>
+        <div class="form-grid">
+          <label>소유자 <input name="owner" maxlength="255" /></label>
+          <label>부서 <input name="department" maxlength="255" /></label>
+          <label>보안등급 <input name="security_level" maxlength="64" /></label>
+        </div>
+        <label>문서 파일
+          <input name="file" type="file" accept=".pdf,.doc,.docx,.odt,.xls,.xlsx,.ppt,.pptx,.hwp,.hwpx,.txt,.text,.csv,.tsv,.md,.markdown,.rtf,.json,.jsonl,.xml,.html,.htm,.log,.java,.py,.js,.jsx,.ts,.tsx,.c,.cpp,.h,.cs,.go,.rs,.sql,.sh,.yaml,.yml,.properties,.ini,.conf,.zip,.tar,.tar.gz,.tgz" required />
+        </label>
+        <label>Metadata JSON <textarea name="metadata_json" rows="4">{}</textarea></label>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost-button" type="button" id="cancelDocumentButton">취소</button>
+          <button class="primary-button" type="submit">등록</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="similarLogsDialog" class="wide-dialog">
+      <div class="dialog-panel">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">similar logs</p>
+            <h2 id="similarLogsTitle">유사 로그</h2>
+            <p id="similarLogsMeta" class="muted">-</p>
+          </div>
+          <button id="closeSimilarLogsButton" class="ghost-button" type="button">닫기</button>
+        </div>
+        <div id="similarLogsResults" class="result-list modal-result-list"></div>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" hidden></div>
+    <script src="/admin/static/app.js?v=20260601-upload"></script>
+  </body>
+</html>

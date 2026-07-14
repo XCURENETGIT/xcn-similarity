@@ -1,0 +1,5 @@
+name: xcn-similarity
+
+include:
+  - docker-compose.infra.yml
+  - docker-compose.app.yml

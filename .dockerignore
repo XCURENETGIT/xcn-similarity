@@ -1,0 +1,12 @@
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+logs/
+.env
+dist/
+*.tgz
+*.tar.gz
+_tmp_*.json
+tmp_*.py
+debug_*.py

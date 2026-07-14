@@ -1,0 +1,65 @@
+name: xcn-similarity
+
+services:
+  mongodb:
+    container_name: xcn-similarity-mongodb
+    image: ${MONGO_IMAGE:-xcn-similarity/mongo:8.3}
+    command: ["mongod", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/infra/mongodb:/data/db
+      - /data/infra/mongodb_config:/data/configdb
+    restart: unless-stopped
+
+  etcd:
+    container_name: xcn-similarity-etcd
+    image: ${ETCD_IMAGE:-xcn-similarity/etcd:v3.5.18}
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_SNAPSHOT_COUNT=50000
+    volumes:
+      - /data/infra/xcn-similarity-etcd:/etcd
+    command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    restart: unless-stopped
+
+  minio:
+    container_name: xcn-similarity-minio
+    image: ${MINIO_IMAGE:-xcn-similarity/minio:latest}
+    environment:
+      MINIO_ACCESS_KEY: ${MILVUS_MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MILVUS_MINIO_SECRET_KEY:-minioadmin}
+    ports:
+      - "19010:9000"
+      - "19011:9001"
+    volumes:
+      - /data/infra/minio:/minio_data
+      - /data/infra/minio_config:/data
+    command: minio server /minio_data --console-address ":9001"
+    restart: unless-stopped
+
+  milvus:
+    container_name: xcn-similarity-milvus
+    image: ${MILVUS_IMAGE:-xcn-similarity/milvus:v2.6.18}
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      LD_PRELOAD: /milvus/lib/libjemalloc.so
+      MINIO_ADDRESS: minio:9000
+      MINIO_ACCESS_KEY_ID: ${MILVUS_MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_ACCESS_KEY: ${MILVUS_MINIO_SECRET_KEY:-minioadmin}
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    volumes:
+      - /data/infra/milvus:/var/lib/milvus
+    depends_on:
+      - etcd
+      - minio
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    restart: unless-stopped

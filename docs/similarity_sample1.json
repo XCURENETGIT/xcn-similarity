@@ -1,0 +1,47 @@
+{
+  "type": "similarity",
+  "msgid": "20260617102628.XDBGC6XGKHV463Y4LFZQPS5V4ZRBKZWZ",
+  "data": {
+    "similarity": {
+      "success": true,
+      "status": 200,
+      "message": "OK",
+      "version": "similarity-result-v1",
+      "generated_at": "2026-06-19T15:52:16+09:00",
+      "thresholds": {
+        "min_score": 0.82,
+        "grey_zone_low_score": 0.62,
+        "grey_zone_high_score": 0.82
+      },
+      "summary": {
+        "detected": true,
+        "max_score": 1.0000001,
+        "risk_level": "high",
+        "match_count": 1
+      },
+      "results": [
+        {
+          "target": "attach",
+          "attach_index": 0,
+          "max_score": 1.0000001,
+          "risk_level": "high",
+          "review_scope": "high_risk",
+          "review_status": "unreviewed",
+          "matches": [
+            {
+              "document_id": "doc_c224eca22858245a49db05d4",
+              "document_title": "유사도분석_기능목록_20260616",
+              "document_chunk_id": "chunk-000002",
+              "document_security_level": "일반",
+              "log_chunk_id": "chunk-000002",
+              "score": 1.0000001,
+              "score_percent": 100.0,
+              "reason": "등록문서 '유사도분석_기능목록_20260616'와 첨부 0이 100.0% 유사합니다.",
+              "review": null
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
